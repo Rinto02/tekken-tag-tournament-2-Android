@@ -1,0 +1,43 @@
+name: android
+
+on:
+  push:
+    branches: [android]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  platform-host:
+    name: Platform layer (Linux host tests)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S port/android -B build-host -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build-host -j
+      - name: Test
+        run: ctest --test-dir build-host --output-on-failure
+
+  platform-ndk:
+    name: Platform layer (NDK arm64-v8a)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Locate NDK
+        run: |
+          NDK="${ANDROID_NDK_LATEST_HOME:-${ANDROID_NDK_ROOT:-}}"
+          if [ -z "$NDK" ] || [ ! -d "$NDK" ]; then
+            echo "No NDK on this runner" >&2
+            exit 1
+          fi
+          echo "NDK_PATH=$NDK" >> "$GITHUB_ENV"
+      - name: Configure
+        run: |
+          cmake -S port/android -B build-android -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE="$NDK_PATH/build/cmake/android.toolchain.cmake" \
+            -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-29
+      - name: Build
+        run: cmake --build build-android -j
+      - name: Show artifacts
+        run: file build-android/platform_test build-android/libttt2_platform.a
