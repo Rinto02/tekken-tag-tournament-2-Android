@@ -117,6 +117,7 @@ def main():
     if not (ROOT / "re" / "decrypted" / "Default_patched_tu3.bin").exists():
         sys.exit("patched image was not unpacked")
 
+    run([sys.executable, TOOLS / "fix_ppc_arm64.py", ROOT / "re" / "ppc" / "ppc_context.h"])
     run([sys.executable, TOOLS / "debug_probes.py"])
     run([sys.executable, TOOLS / "check_recomp_acceptance.py"])
     run([sys.executable, TOOLS / "gen_kernel_stubs.py"])
