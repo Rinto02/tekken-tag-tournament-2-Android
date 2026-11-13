@@ -22,6 +22,8 @@
 /port/*
 !/port/CMakeLists.txt
 !/port/INSTALLER.md
+!/port/ANDROID.md
+!/port/android/
 !/port/src/
 !/port/tools/
 !/port/third_party/
