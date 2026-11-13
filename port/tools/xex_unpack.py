@@ -8,6 +8,7 @@ output image is written to re/decrypted/ (gitignored) for local analysis only.
 BASIC compression + normal encryption only (matches TTT2: enc=1, comp=1).
 """
 import struct, os, sys
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Crypto.Cipher import AES
 
 RETAIL_KEY = bytes.fromhex("20B185A59D28FDC340583FBB0896BF91")
@@ -99,9 +100,9 @@ def find_stubs(img, base):
     return ok
 
 if __name__ == "__main__":
-    xex = sys.argv[1] if len(sys.argv) > 1 else r"D:\Projects\Tekken Tag Tournament 2 (USA, Europe)\re\Default.xex"
+    xex = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT_DIR, "re", "Default.xex")
     img, base = unpack(xex)
-    outdir = r"D:\Projects\Tekken Tag Tournament 2 (USA, Europe)\re\decrypted"
+    outdir = os.path.join(ROOT_DIR, "re", "decrypted")
     os.makedirs(outdir, exist_ok=True)
     stem = os.path.splitext(os.path.basename(xex))[0]
     outp = os.path.join(outdir, stem + ".bin")
